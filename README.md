@@ -17,12 +17,14 @@ go get https://github.com/willwangcn/fastcsv
 
 ```go
 type Student struct {
-	Name string
-	Age  int
+	Id       int64
+	Name     string
+	Age      int
+	Lat, Lng float64
 }
-// right case
-headers = []{"name", "age"}
-headers = []{"AGE", "NAme"}
+// right case, if you not config the field, it will not be initialized
+headers = []{"name", "age", "lat"}
+headers = []{"AGE", "NAme", "lng"}
 
 // wrong case
 headers = []{"s_name", "s_age"}
