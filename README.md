@@ -53,7 +53,7 @@ if err != nil {
     return
 }
 headers := []string{"id", "name", "age", "lat", "lng"}
-reader := csvreader.NewCSVReader(f, ",", false, headers)
+reader := fastcsv.NewFastcsv(f, ",", false, headers)
 students := reader.ReadAll(Student{})
 for _, val := range orders {
     stu := val.(Student)
