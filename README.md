@@ -52,7 +52,7 @@ defer f.Close()
 if err != nil {
     return
 }
-headers := []string{"id", "name", "age", "lat", "lng}
+headers := []string{"id", "name", "age", "lat", "lng"}
 reader := csvreader.NewCSVReader(f, ",", false, headers)
 students := reader.ReadAll(Student{})
 for _, val := range orders {
