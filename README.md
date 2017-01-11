@@ -2,7 +2,7 @@
 Fastcsv is a csv parser for golang.
 
 # Install
-go get https://github.com/willwangcn/fastcsv
+go get -t github.com/willwangcn/fastcsv
 
 # Usage
 #### Parsing
