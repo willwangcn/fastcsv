@@ -30,7 +30,7 @@ headers = []{"AGE", "NAme", "lng"}
 headers = []{"s_name", "s_age"}
 ```
 
-#### how to use
+#### Test
 ```go
 data := bytes.NewBuffer([]byte(`
 	Will,201601101716,18,40.654321,116.25820398331
@@ -42,6 +42,22 @@ students := reader.ReadAll(Student{})
 will := students[0]
 if will.(Student).Name != "Will" {
     t.Fail()
+}
+```
+
+#### How to Use
+```go
+f, err := os.Open(filePath)
+defer f.Close()
+if err != nil {
+    return
+}
+headers := []string{"id", "name", "age", "lat", "lng}
+reader := csvreader.NewCSVReader(f, ",", false, headers)
+students := reader.ReadAll(Student{})
+for _, val := range orders {
+    stu := val.(Student)
+    fmt.Println(stu)
 }
 ```
 
