@@ -55,7 +55,7 @@ if err != nil {
 headers := []string{"id", "name", "age", "lat", "lng"}
 reader := fastcsv.NewFastcsv(f, ",", false, headers)
 students := reader.ReadAll(Student{})
-for _, val := range orders {
+for _, val := range students {
     stu := val.(Student)
     fmt.Println(stu)
 }
