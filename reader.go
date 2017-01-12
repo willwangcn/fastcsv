@@ -6,14 +6,14 @@ import (
 	"io"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type Fastcsv struct {
 	scanner *bufio.Scanner
 	sep     string
-	err     error
 	header  bool
-	headers []string
+	columns []string
 }
 
 func NewFastcsv(reader io.Reader, sep string, header bool, headers []string) *Fastcsv {
@@ -21,16 +21,16 @@ func NewFastcsv(reader io.Reader, sep string, header bool, headers []string) *Fa
 		scanner: bufio.NewScanner(reader),
 		sep:     sep,
 		header: header,
-		headers : headers,
+		columns : headers,
 	}
 }
 
-func (reader *Fastcsv) ReadHeader() map[string]int {
-	if !reader.scanner.Scan() {
+func (parser *Fastcsv) ReadHeader() map[string]int {
+	if !parser.scanner.Scan() {
 		return nil
 	}
-	line := reader.scanner.Text()
-	parts := strings.Split(line, reader.sep)
+	line := parser.scanner.Text()
+	parts := strings.Split(line, parser.sep)
 	fields := make(map[string]int)
 	for i := 0; i < len(parts); i++ {
 		fields[strings.ToLower(parts[i])] = i
@@ -38,42 +38,37 @@ func (reader *Fastcsv) ReadHeader() map[string]int {
 	return fields
 }
 
-func (reader *Fastcsv) Err() error {
-	if err := reader.scanner.Err(); err != nil {
+func (parser *Fastcsv) Err() error {
+	if err := parser.scanner.Err(); err != nil {
 		return err
 	}
-
-	return reader.err
+	return nil
 }
 
-func (reader *Fastcsv) ResetErr() {
-	reader.err = nil
-}
-
-func (reader *Fastcsv) ReadAll(v interface{}) []interface{} {
+func (parser *Fastcsv) ReadAll(v interface{}) ([]interface{}, error) {
 	var slice []interface{}
 
-	if err := reader.Err(); err != nil {
-		return slice
+	if err := parser.Err(); err != nil {
+		return slice, err
 	}
 
 	var headers map[string]int
 
-	if reader.header {
-		headers = reader.ReadHeader()
-	} else if reader.headers != nil {
+	if parser.header {
+		headers = parser.ReadHeader()
+	} else if parser.columns != nil {
 		headers = make(map[string]int)
-		for i, val := range reader.headers {
+		for i, val := range parser.columns {
 			headers[strings.ToLower(val)] = i
 		}
 	}
 
-	for reader.scanner.Scan() {
-		line := strings.TrimSpace(reader.scanner.Text())
+	for parser.scanner.Scan() {
+		line := strings.TrimSpace(parser.scanner.Text())
 		if len(line) == 0 {
 			continue
 		}
-		parts := strings.Split(line, reader.sep)
+		parts := strings.Split(line, parser.sep)
 		val := reflect.New(reflect.TypeOf(v)).Elem()
 		typ := val.Type()
 		for i := 0; i < val.NumField(); i ++ {
@@ -91,6 +86,15 @@ func (reader *Fastcsv) ReadAll(v interface{}) []interface{} {
 					fv.SetString(part)
 				case reflect.Ptr:
 					fmt.Sscan(part, fv.Interface())
+				case reflect.Struct:
+					switch ft.Type.Name() {
+					case "Time":
+						date, err := time.Parse("2006-01-02 15:04:05", part)
+						if err != nil {
+							return slice, err
+						}
+						fv.Set(reflect.ValueOf(date))
+					}
 				default:
 					fmt.Sscan(part, fv.Addr().Interface())
 				}
@@ -99,5 +103,5 @@ func (reader *Fastcsv) ReadAll(v interface{}) []interface{} {
 		slice = append(slice, val.Interface())
 	}
 
-	return slice
+	return slice, nil
 }

@@ -32,33 +32,39 @@ headers = []{"s_name", "s_age"}
 
 #### Test
 ```go
-data := bytes.NewBuffer([]byte(`
-	Will,201601101716,18,40.654321,116.25820398331
-Jack,201601101717,50,40.08296,116.316081
-Tony,201601101718,44,40.060394,116.239552`))
-headers := []string{"name", "id", "lat", "lng"}
-reader := NewFastcsv(data, ",", false, headers)
-students := reader.ReadAll(Student{})
-will := students[0]
-if will.(Student).Name != "Will" {
-    t.Fail()
-}
+	data := bytes.NewBuffer([]byte(`
+	Will,201601101716,18,40.654321,116.25820398331,2016-01-10 23:59:59
+    Jack,201601101717,50,40.08296,116.316081,1990-01-31 23:59:59
+    Tony,201601101718,44,40.060394,116.239552,1963-10-10 23:59:59`))
+	columns := []string{"name", "id", "age", "lat", "lng", "birthday"}
+	parser := fastcsv.NewFastcsv(data, ",", false, columns)
+	students, err := parser.ReadAll(Student{})
+	if err != nil {
+		panic(err)
+	}
+	will := students[0].(Student)
+	if will.Name != "Will" {
+		t.Fail()
+	}
 ```
 
 #### How to Use
 ```go
-f, err := os.Open(filePath)
-defer f.Close()
-if err != nil {
-    return
-}
-headers := []string{"id", "name", "age", "lat", "lng"}
-reader := fastcsv.NewFastcsv(f, ",", false, headers)
-students := reader.ReadAll(Student{})
-for _, val := range students {
-    stu := val.(Student)
-    fmt.Println(stu)
-}
+    f, err := os.Open(filePath)
+    defer f.Close()
+    if err != nil {
+        return
+    }
+    columns := []string{"id", "name", "age", "lat", "lng"}
+    parser, err := fastcsv.NewFastcsv(f, ",", false, headers)
+	if err != nil {
+		panic(err)
+	}
+    students := parser.ReadAll(Student{})
+    for _, val := range students {
+        stu := val.(Student)
+        fmt.Println(stu)
+    }
 ```
 
 # License 
