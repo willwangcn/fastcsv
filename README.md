@@ -26,11 +26,11 @@ type Student struct {
 	Lat, Lng float64
 }
 // right case, if you not config the field, it will not be initialized
-headers = []{"name", "age", "lat"}
-headers = []{"AGE", "NAme", "lng"}
+headers = []string{"name", "age", "lat"}
+headers = []string{"AGE", "NAme", "lng"}
 
 // wrong case
-headers = []{"s_name", "s_age"}
+headers = []string{"s_name", "s_age"}
 ```
 
 #### Test
