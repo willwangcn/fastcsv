@@ -10,7 +10,8 @@ go get -t github.com/willwangcn/fastcsv
 
 - `header=false|true`  Set to true if you expect the first line of your CSV to contain headers, alternatly you can specify an array of headers using headers param. You can also specify a sparse array to omit some of the columns.
 
-- `headers=slice|nil` If your data doesn't contain headers and want to specify the header fields.
+- `columns=slice|nil` If your data doesn't contain header and want to specify the column name.
+
 **Notice** headers column name must equals struct's field name ignoring case.
 
 **Example**
