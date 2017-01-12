@@ -1,4 +1,5 @@
 # Fastcsv
+[![Build Status](https://travis-ci.org/willwangcn/fastcsv.svg?branch=master)](https://travis-ci.org/willwangcn/fastcsv)
 Fastcsv is a csv parser for golang.
 
 # Install
