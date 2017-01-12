@@ -62,7 +62,6 @@ func (parser *Fastcsv) ReadAll(v interface{}) ([]interface{}, error) {
 			headers[strings.ToLower(val)] = i
 		}
 	}
-
 	for parser.scanner.Scan() {
 		line := strings.TrimSpace(parser.scanner.Text())
 		if len(line) == 0 {
@@ -79,7 +78,10 @@ func (parser *Fastcsv) ReadAll(v interface{}) ([]interface{}, error) {
 				continue
 			}
 			if headers != nil {
-				idx := headers[strings.ToLower(ft.Name)]
+				idx, err := headers[strings.ToLower(ft.Name)]
+				if !err {
+					continue
+				}
 				part := strings.TrimSpace(parts[idx])
 				switch fv.Kind() {
 				case reflect.String:
